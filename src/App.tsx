@@ -10,8 +10,6 @@ import MyAccountPage from "./MyAccountPage";
 import ThemePage from "./ThemePage/Theme";
 
 const App: React.FC = () => {
-  const { isLoggedIn } = useAuth();
-
   return (
     <AuthProvider>
       <Router>
@@ -20,16 +18,21 @@ const App: React.FC = () => {
           <Route path="/" Component={Main} />
           <Route path="/theme/:themeKey" Component={ThemePage} />
           <Route path="/login" Component={LoginPage} />
-          {isLoggedIn ? (
-            <Route path="/my-account" element={<MyAccountPage />} />
-          ) : (
-            <Navigate to="/login" />
-          )}
+          <Route path="/my-account" element={<PrivateRoute element={<MyAccountPage />} />} />
         </Routes>
         <Footer />
       </Router>
     </AuthProvider>
   );
+};
+
+interface PrivateRouteProps {
+  element: React.ReactElement;
+}
+
+const PrivateRoute: React.FC<PrivateRouteProps> = ({ element }) => {
+  const { isLoggedIn } = useAuth();
+  return isLoggedIn ? element : <Navigate to="/login" />;
 };
 
 export default App;
